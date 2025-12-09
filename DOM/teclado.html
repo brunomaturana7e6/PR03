@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teclado Numerico</title>
+    <style>
+        .tecla {
+            width: 100px;
+            height: 100px;
+            border: 2px red solid;
+            border-radius: 10px;
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            font-size: 30px;
+            color: red;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="titulo">Teclado númerico</h1>
+    <div id="teclado">
+
+
+    </div>
+    <script>
+        let teclado = document.getElementById("teclado");
+
+    for (let i = 1; i < 10; i++) {
+        let tecla = document.createElement("div");
+        tecla.innerHTML="<p>"+i+"</p>";
+        tecla.className="tecla";
+
+        if((i%2)==0){
+            tecla.style.backgroundColor = "blue";
+        }
+
+        teclado.appendChild(tecla);
+    }
+        
+    </script>
+</body>
+</html>
