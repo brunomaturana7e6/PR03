@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio 1 - Cambiar el contenido</title>
+</head>
+<body>
+    <h1 id="titulo">Titulo original</h1>
+    <p id="parrafo">Texto original</p>
+
+    <img id="talkingheads" src="Portfolio/IMAGENES/rotoscopia.png">
+    <p id="descripcion">there is water at the bottom of the ocean</p>
+
+    <script>
+        let titulo = document.getElementById("titulo");
+        titulo.textContent = "Titulo actualizado";
+        
+        document.getElementById("parrafo").textContent = "Texto actualizado";
+
+        let imagen = document.getElementById("talkingheads");
+        imagen.src="Portfolio/IMAGENES/conill.png";
+        imagen.alt="Imagen actualizada";
+        document.getElementById("descripcion").textContent = "Imagen actualizada";
+
+        let newArticle = document.createElement("article");
+        newArticle.innerHTML="<h3>Titulo del articulo</h3><p>parrafo del articulo</p>";
+
+        document.body.appendChild(newArticle)
+    </script>
+</body>
+</html>
