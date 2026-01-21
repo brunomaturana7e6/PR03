@@ -26,10 +26,13 @@ scene.add(new THREE.AmbientLight(0xffffff, 1));
 const loader = new GLTFLoader();
 
 // CARGAR MODELO
+let guitarra;
+
 loader.load(
   'models/guitarra.glb',
   function (gltf) {
-    scene.add(gltf.scene);
+    guitarra = gltf.scene;
+    scene.add(guitarra);
   },
   undefined,
   function (error) {
