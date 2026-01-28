@@ -5,6 +5,9 @@ import { GLTFLoader } from 'GLTFLoader';
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x608030);
 
+let objetoSeleccionado = null;
+let materialOriginal = null;
+
 // CÁMARA
 const camera = new THREE.PerspectiveCamera(
   20,
@@ -13,6 +16,8 @@ const camera = new THREE.PerspectiveCamera(
   100
 );
 camera.position.set(1, 1, 4);
+
+const cameraDirection = new THREE.Vector3(0, 1, 1);
 
 // RENDERER
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -48,6 +53,17 @@ loader.load(
   }
 );
 
+const cuerdas = ["Cuerda1", "Cuerda2", "Cuerda3", "Cuerda4", "Cuerda5", "Cuerda6"];
+
+const sonidosCuerdas = {
+  Cuerda1: new Audio('audio/Cuerda1.mp3'),
+  Cuerda2: new Audio('audio/Cuerda2.mp3'),
+  Cuerda3: new Audio('audio/Cuerda3.mp3'),
+  Cuerda4: new Audio('audio/Cuerda4.mp3'),
+  Cuerda5: new Audio('audio/Cuerda5.mp3'),
+  Cuerda6: new Audio('audio/Cuerda6.mp3')
+};
+
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
@@ -65,32 +81,61 @@ function onClick(event) {
     const objeto = intersects[0].object;
     const nombre = objeto.name;
 
+    if (cuerdas.includes(nombre)) {
+      console.log("Cuerda pulsada:", nombre);
+      const audio = sonidosCuerdas[nombre];
+      if (audio) {
+        audio.currentTime = 0; // Reinicia el audio si estaba sonando
+        audio.play();
+      }
+      return; // Sale de la función, no hace zoom ni highlight
+    }
+
     console.log('Has pulsado:', nombre);
 
+    highlightObject(objeto);
     focusOnObject(objeto);
     mostrarInfo(nombre);
+  }
 }
+
+function highlightObject(obj) {
+  if (objetoSeleccionado) {
+    objetoSeleccionado.material = materialOriginal;
+  }
+
+  objetoSeleccionado = obj;
+  materialOriginal = obj.material;
+
+  obj.material = new THREE.MeshStandardMaterial({
+    color: 0xffcc00,
+    emissive: 0xffaa00,
+    emissiveIntensity: 0.5
+  });
 }
 
 function focusOnObject(obj) {
   const box = new THREE.Box3().setFromObject(obj);
   const center = box.getCenter(new THREE.Vector3());
 
-  // 📌 Distancia personalizada o por defecto
-  let distance = zoomPorParte[obj.name] ?? 2.5;
+  let distance = zoomPorParte[obj.name] ?? 1;
 
-  const direction = new THREE.Vector3()
-    .subVectors(camera.position, center)
-    .normalize();
-
+  const direction = cameraDirection.clone().normalize();
   const newPos = center.clone().add(direction.multiplyScalar(distance));
+
+  // ❌ cancelar animaciones anteriores
+  gsap.killTweensOf(camera.position);
+  gsap.killTweensOf(controls.target);
 
   gsap.to(camera.position, {
     x: newPos.x,
     y: newPos.y,
     z: newPos.z,
     duration: 1,
-    ease: "power2.out"
+    ease: "power2.out",
+    onUpdate: () => {
+      camera.lookAt(center);
+    }
   });
 
   gsap.to(controls.target, {
@@ -98,7 +143,10 @@ function focusOnObject(obj) {
     y: center.y,
     z: center.z,
     duration: 1,
-    ease: "power2.out"
+    ease: "power2.out",
+    onUpdate: () => {
+      controls.update();
+    }
   });
 }
 
